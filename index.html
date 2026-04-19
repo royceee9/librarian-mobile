@@ -201,6 +201,7 @@
   <script>
     const LIBRARIAN_URL = 'https://royhpvictus.tail8a1ee8.ts.net';
     const params = new URLSearchParams(location.search);
+    const installMode = params.get('install') === '1';
     const shared = {
       url: params.get('url') || '',
       text: params.get('text') || '',
@@ -230,6 +231,12 @@
           Object.assign(shared, parsed);
         } catch {}
       }
+    }
+
+    if (installMode) {
+      sharedBox.textContent = 'Install mode is on. Use Chrome menu â†’ Install app or Add to Home screen, then open Librarian normally afterward.';
+      statusBox.innerHTML = '<strong>Install mode.</strong> This page stays visible so Chrome has a chance to offer installation.';
+      setFallbackMode(true);
     }
 
     function buildLibrarianUrl() {
@@ -279,6 +286,10 @@
     });
 
     window.addEventListener('load', () => {
+      if (installMode) {
+        setFallbackMode(true);
+        return;
+      }
       setFallbackMode(false);
       setTimeout(() => {
         showFallback('<strong>Librarian did not open yet.</strong> Open Tailscale on your phone, then tap Retry or Open Librarian.');
