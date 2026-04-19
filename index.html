@@ -39,6 +39,11 @@
       justify-content:center;
       padding:24px;
     }
+    body:not(.fallback-visible) .shell{
+      opacity:0;
+      pointer-events:none;
+      transform:translateY(8px);
+    }
     .shell{
       width:min(100%, 460px);
       background:var(--surface);
@@ -47,6 +52,7 @@
       border-radius:32px;
       box-shadow:var(--shadow);
       padding:28px 22px 22px;
+      transition:opacity .2s ease, transform .2s ease;
     }
     .brand{
       display:flex;
@@ -167,16 +173,16 @@
       <div>
         <div class="eyebrow">Mobile Launcher</div>
         <h1>Librarian</h1>
-        <p class="sub">Install once, share any link from your phone, and send it into your private Librarian over Tailscale.</p>
+        <p class="sub">Install once, share any link from your phone, and hand it straight into your private Librarian over Tailscale.</p>
       </div>
     </div>
 
     <section class="card">
       <div class="label">Shared Item</div>
-      <div class="shared-box" id="shared-box">Nothing shared yet. Use your phone's Share menu and choose Librarian.</div>
+      <div class="shared-box" id="shared-box">Connecting you to Librarianâ€¦</div>
 
       <div class="status" id="status-box">
-        <strong>Ready.</strong> Open Tailscale first if Librarian is not reachable, then tap <em>Open Librarian</em>.
+        <strong>Checking Librarianâ€¦</strong> This fallback screen only stays visible if Librarian is unreachable.
       </div>
 
       <div class="actions">
@@ -187,7 +193,7 @@
 
       <div class="tiny">
         Librarian target: <span id="target-label">http://100.79.109.106:5051</span><br>
-        If the launcher cannot reach Librarian, connect Tailscale on your phone and try again.
+        If the launcher cannot reach Librarian, connect Tailscale and try again.
       </div>
     </section>
   </main>
@@ -232,14 +238,23 @@
       return url.toString();
     }
 
-    async function checkLibrarian() {
+    function setFallbackMode(reachable) {
+      document.body.classList.toggle('fallback-visible', !reachable);
+    }
+
+    async function checkLibrarian(autoOpen = false) {
       const pingUrl = `${LIBRARIAN_URL}/check`;
       try {
         const res = await fetch(pingUrl, { mode: 'cors' });
         if (!res.ok) throw new Error('unreachable');
-        statusBox.innerHTML = '<strong>Librarian is reachable.</strong> You can open it now.';
+        setFallbackMode(true);
+        statusBox.innerHTML = '<strong>Librarian is reachable.</strong> Opening it nowâ€¦';
+        if (autoOpen) {
+          setTimeout(openLibrarian, 180);
+        }
         return true;
       } catch {
+        setFallbackMode(false);
         statusBox.innerHTML = '<strong>Librarian is not reachable yet.</strong> Open Tailscale on your phone, make sure it is connected, then retry.';
         return false;
       }
@@ -273,7 +288,10 @@
     tailscaleBtn.addEventListener('click', openTailscale);
     retryBtn.addEventListener('click', checkLibrarian);
 
-    window.addEventListener('load', checkLibrarian);
+    window.addEventListener('load', () => {
+      setFallbackMode(false);
+      checkLibrarian(true);
+    });
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js').catch(() => {});
