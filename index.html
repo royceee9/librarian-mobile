@@ -179,10 +179,10 @@
 
     <section class="card">
       <div class="label">Shared Item</div>
-      <div class="shared-box" id="shared-box">Connecting you to Librarianâ€¦</div>
+      <div class="shared-box" id="shared-box">If you still see this after a moment, open Tailscale and retry.</div>
 
       <div class="status" id="status-box">
-        <strong>Checking Librarianâ€¦</strong> This fallback screen only stays visible if Librarian is unreachable.
+        <strong>Opening Librarianâ€¦</strong> This helper screen only stays visible if the redirect does not complete.
       </div>
 
       <div class="actions">
@@ -238,30 +238,17 @@
       return url.toString();
     }
 
-    function setFallbackMode(reachable) {
-      document.body.classList.toggle('fallback-visible', !reachable);
+    function setFallbackMode(showFallback) {
+      document.body.classList.toggle('fallback-visible', !!showFallback);
     }
 
-    async function checkLibrarian(autoOpen = false) {
-      const pingUrl = `${LIBRARIAN_URL}/check`;
-      try {
-        const res = await fetch(pingUrl, { mode: 'cors' });
-        if (!res.ok) throw new Error('unreachable');
-        setFallbackMode(true);
-        statusBox.innerHTML = '<strong>Librarian is reachable.</strong> Opening it nowâ€¦';
-        if (autoOpen) {
-          setTimeout(openLibrarian, 180);
-        }
-        return true;
-      } catch {
-        setFallbackMode(false);
-        statusBox.innerHTML = '<strong>Librarian is not reachable yet.</strong> Open Tailscale on your phone, make sure it is connected, then retry.';
-        return false;
-      }
+    function showFallback(message = null) {
+      setFallbackMode(true);
+      if (message) statusBox.innerHTML = message;
     }
 
     function openLibrarian() {
-      window.location.href = buildLibrarianUrl();
+      window.location.replace(buildLibrarianUrl());
     }
 
     function openTailscale() {
@@ -286,11 +273,17 @@
 
     openBtn.addEventListener('click', openLibrarian);
     tailscaleBtn.addEventListener('click', openTailscale);
-    retryBtn.addEventListener('click', checkLibrarian);
+    retryBtn.addEventListener('click', () => {
+      showFallback('<strong>Retryingâ€¦</strong> Attempting to open Librarian again.');
+      setTimeout(openLibrarian, 120);
+    });
 
     window.addEventListener('load', () => {
       setFallbackMode(false);
-      checkLibrarian(true);
+      setTimeout(() => {
+        showFallback('<strong>Librarian did not open yet.</strong> Open Tailscale on your phone, then tap Retry or Open Librarian.');
+      }, 1400);
+      setTimeout(openLibrarian, 120);
     });
 
     if ('serviceWorker' in navigator) {
