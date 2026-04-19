@@ -200,8 +200,9 @@
 
   <script>
     const LIBRARIAN_URL = 'https://royhpvictus.tail8a1ee8.ts.net';
+    const isStandaloneApp = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
     const params = new URLSearchParams(location.search);
-    const installMode = params.get('install') === '1';
+    const installMode = params.get('install') === '1' && !isStandaloneApp;
     const shared = {
       url: params.get('url') || '',
       text: params.get('text') || '',
