@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#786df2">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Librarian">
+  <title>Librarian</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="logo.svg">
+  <style>
+    :root{
+      --bg:#f6f4ff;
+      --surface:rgba(255,255,255,0.9);
+      --surface-2:#ffffff;
+      --text:#1f2333;
+      --muted:#737894;
+      --violet:#786df2;
+      --violet-2:#8f84ff;
+      --border:rgba(103,104,161,0.16);
+      --shadow:0 20px 50px rgba(53,59,93,0.12);
+      --radius:24px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(143,132,255,0.20), transparent 28rem),
+        radial-gradient(circle at bottom right, rgba(88,200,255,0.14), transparent 24rem),
+        var(--bg);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+    .shell{
+      width:min(100%, 460px);
+      background:var(--surface);
+      backdrop-filter:blur(18px);
+      border:1px solid var(--border);
+      border-radius:32px;
+      box-shadow:var(--shadow);
+      padding:28px 22px 22px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      margin-bottom:18px;
+    }
+    .logo{
+      width:54px;height:54px;border-radius:16px;
+      background:#fff;
+      border:1px solid rgba(120,109,242,0.16);
+      display:grid;place-items:center;
+      box-shadow:0 12px 30px rgba(80,86,126,0.10);
+      flex-shrink:0;
+    }
+    .logo img{width:48px;height:48px;display:block}
+    .eyebrow{
+      font-size:11px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:var(--violet);
+      margin-bottom:5px;
+      font-weight:700;
+    }
+    h1{
+      margin:0;
+      font-size:30px;
+      line-height:1;
+      font-family:Georgia,"Times New Roman",serif;
+      letter-spacing:-0.02em;
+    }
+    .sub{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.55;
+    }
+    .card{
+      margin-top:16px;
+      background:var(--surface-2);
+      border:1px solid var(--border);
+      border-radius:24px;
+      padding:18px 16px;
+    }
+    .label{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.16em;
+      color:var(--muted);
+      margin-bottom:10px;
+      font-weight:700;
+    }
+    .shared-box{
+      background:rgba(120,109,242,0.06);
+      border:1px solid rgba(120,109,242,0.12);
+      border-radius:18px;
+      padding:12px 13px;
+      font-size:13px;
+      line-height:1.45;
+      color:#414665;
+      word-break:break-word;
+      min-height:46px;
+    }
+    .status{
+      margin-top:14px;
+      padding:12px 13px;
+      border-radius:16px;
+      font-size:13px;
+      line-height:1.5;
+      background:rgba(120,109,242,0.07);
+      color:#4f5380;
+      border:1px solid rgba(120,109,242,0.10);
+    }
+    .status strong{color:var(--text)}
+    .actions{
+      margin-top:16px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+    button,a.button{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      text-decoration:none;
+      padding:12px 16px;
+      border-radius:999px;
+      font-size:14px;
+      font-weight:600;
+      transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+    button:hover,a.button:hover{transform:translateY(-1px)}
+    .primary{
+      background:linear-gradient(135deg,var(--violet),var(--violet-2));
+      color:#fff;
+      box-shadow:0 14px 28px rgba(120,109,242,0.25);
+    }
+    .secondary{
+      background:#fff;
+      color:var(--text);
+      border:1px solid var(--border);
+    }
+    .tiny{
+      margin-top:14px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.55;
+    }
+    .hidden{display:none!important}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="brand">
+      <div class="logo">
+        <img src="logo.svg" alt="Librarian logo">
+      </div>
+      <div>
+        <div class="eyebrow">Mobile Launcher</div>
+        <h1>Librarian</h1>
+        <p class="sub">Install once, share any link from your phone, and send it into your private Librarian over Tailscale.</p>
+      </div>
+    </div>
+
+    <section class="card">
+      <div class="label">Shared Item</div>
+      <div class="shared-box" id="shared-box">Nothing shared yet. Use your phone's Share menu and choose Librarian.</div>
+
+      <div class="status" id="status-box">
+        <strong>Ready.</strong> Open Tailscale first if Librarian is not reachable, then tap <em>Open Librarian</em>.
+      </div>
+
+      <div class="actions">
+        <button class="primary" id="open-btn" type="button">Open Librarian</button>
+        <button class="secondary" id="tailscale-btn" type="button">Open Tailscale</button>
+        <button class="secondary" id="retry-btn" type="button">Retry</button>
+      </div>
+
+      <div class="tiny">
+        Librarian target: <span id="target-label">http://100.79.109.106:5051</span><br>
+        If the launcher cannot reach Librarian, connect Tailscale on your phone and try again.
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const LIBRARIAN_URL = 'http://100.79.109.106:5051';
+    const params = new URLSearchParams(location.search);
+    const shared = {
+      url: params.get('url') || '',
+      text: params.get('text') || '',
+      title: params.get('title') || ''
+    };
+
+    const sharedBox = document.getElementById('shared-box');
+    const statusBox = document.getElementById('status-box');
+    const targetLabel = document.getElementById('target-label');
+    const openBtn = document.getElementById('open-btn');
+    const tailscaleBtn = document.getElementById('tailscale-btn');
+    const retryBtn = document.getElementById('retry-btn');
+
+    targetLabel.textContent = LIBRARIAN_URL;
+
+    if (shared.url || shared.text || shared.title) {
+      const preview = [shared.title, shared.text, shared.url].filter(Boolean).join('\n');
+      sharedBox.textContent = preview;
+      localStorage.setItem('librarian_shared_payload', JSON.stringify(shared));
+    } else {
+      const cached = localStorage.getItem('librarian_shared_payload');
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          const preview = [parsed.title, parsed.text, parsed.url].filter(Boolean).join('\n');
+          sharedBox.textContent = preview || 'Stored shared item ready to send.';
+          Object.assign(shared, parsed);
+        } catch {}
+      }
+    }
+
+    function buildLibrarianUrl() {
+      const url = new URL(LIBRARIAN_URL);
+      if (shared.url) url.searchParams.set('autourl', shared.url);
+      return url.toString();
+    }
+
+    async function checkLibrarian() {
+      const pingUrl = `${LIBRARIAN_URL}/check`;
+      try {
+        const res = await fetch(pingUrl, { mode: 'cors' });
+        if (!res.ok) throw new Error('unreachable');
+        statusBox.innerHTML = '<strong>Librarian is reachable.</strong> You can open it now.';
+        return true;
+      } catch {
+        statusBox.innerHTML = '<strong>Librarian is not reachable yet.</strong> Open Tailscale on your phone, make sure it is connected, then retry.';
+        return false;
+      }
+    }
+
+    function openLibrarian() {
+      window.location.href = buildLibrarianUrl();
+    }
+
+    function openTailscale() {
+      const ua = navigator.userAgent || '';
+      const isAndroid = /Android/i.test(ua);
+      const isIOS = /iPhone|iPad|iPod/i.test(ua);
+      if (isAndroid) {
+        window.location.href = 'intent://#Intent;scheme=tailscale;package=com.tailscale.ipn;end';
+        setTimeout(() => {
+          if (!document.hidden) {
+            window.open('https://play.google.com/store/apps/details?id=com.tailscale.ipn', '_blank', 'noopener');
+          }
+        }, 1200);
+        return;
+      }
+      if (isIOS) {
+        window.location.href = 'tailscale://';
+        return;
+      }
+      window.open('https://tailscale.com/download', '_blank', 'noopener');
+    }
+
+    openBtn.addEventListener('click', openLibrarian);
+    tailscaleBtn.addEventListener('click', openTailscale);
+    retryBtn.addEventListener('click', checkLibrarian);
+
+    window.addEventListener('load', checkLibrarian);
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>
